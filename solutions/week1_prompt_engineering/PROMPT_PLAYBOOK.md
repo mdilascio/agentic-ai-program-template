@@ -21,15 +21,27 @@ hallucination, verbosity, shallow, drift (format), persona-loss, json-break, con
 ## Results Table (Populate During Lab)
 | Prompt Pattern | Example Used | Model | Adherence (1–5) | Reasoning (1–5) | Style (1–5) | Format (1–5) | Failure Modes | Notes | Reuse? (Y/N) |
 |----------------|--------------|-------|------------------|-----------------|-------------|--------------|---------------|-------|--------------|
+| Simple | Explain how planes fly | llama3 | 5 | 5 | 5 | 5 |  | Really specific on details without asking them | Y |
+| Simple | Explain how planes fly | mistral | 4 | 4 | 5 | 5 |  | Stay with a simple explanation but concise | Y |
+| Role | You are an aerospacial engineer | llama3 | 5 | 5 | 5 | 5 |  | Explaines landing and take off | Y |
+| Role | You are an aerospacial engineer | mistral | 4 | 4 | 5 | 5 |  | Not much added to the simple model | Y |
+| Chain of thought | Explain how planes fly step-by-step | llama3 | 5 | 5 | 5 | 5 |  | Explain all steps correct | Y |
+| Chain of thought | Explain how planes fly step-by-step | mistral | 5 | 5 | 5 | 5 |  | Added more inputs than llama3 | Y |
+| Few-Shot | Palindrome | llama3 | 4 | 4 | 5 | 5 |  | Just words | Y |
+| Few-Shot | Explain how planes fly step-by-step | mistral | 5 | 5 | 5 | 5 |  | Added sentences | Y |
+| Persona | Most difficult jobs for a housemaid | llama3 | 5 | 5 | 5 | 5 |  | Impersionate and replied as the role | Y |
+| Persona | Explain how planes fly step-by-step | mistral | 4 | 5 | 3 | 5 | persona-loss | Did not reply as the role, but it makes sense | Y |
+| Negative | Write a sentence of 10 words without using the vowel a | llama3 | 1 | 5 | 5 | 5 | fail | Could not make it | Y |
+| Negative | Write a sentence of 10 words without using the vowel a | mistral | 1 | 5 | 5 | 5 | fail | Could not make it | Y |
 
 ## Model Summary (After Initial Pass)
 | Capability | Best Model(s) | Evidence Snippet | Notes |
 |------------|---------------|------------------|-------|
-| Explanatory Clarity | | | |
-| Chain-of-Thought | | | |
+| Explanatory Clarity | llama3 | **The Four Forces of Flight** ...| It is structured and concise |
+| Chain-of-Thought | llama3 | Here's a step-by-step explanation of how planes fly, starting with the necessary inputs and ending with the outputs: | It mixed the process of flying with the physics |
 | JSON Adherence | | | |
-| Persona Control | | | |
-| Instruction Strictness | | | |
+| Persona Control | llama3 | Good day sir/ma'am! As a housemaid, I'm happy to share with you the three most challenging tasks I face in my daily routine. | It impersonate the persona correctly |
+| Instruction Strictness | none | | |
 
 ## Insight Log
 Record notable surprises, regressions, or improvements.
