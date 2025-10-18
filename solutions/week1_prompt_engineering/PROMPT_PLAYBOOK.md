@@ -21,14 +21,23 @@ hallucination, verbosity, shallow, drift (format), persona-loss, json-break, con
 ## Results Table (Populate During Lab)
 | Prompt Pattern | Example Used | Model | Adherence (1–5) | Reasoning (1–5) | Style (1–5) | Format (1–5) | Failure Modes | Notes | Reuse? (Y/N) |
 |----------------|--------------|-------|------------------|-----------------|-------------|--------------|---------------|-------|--------------|
+Simple | Photosynthesis |  Ollama (Llama3) | 5 | 5 | 3 | 3 | N/A |  | N
+Simple | Photosynthesis | Ollama (mistral)  | 5 | 5 | 4 | 4 | N/A | | N
+Role |  Photosynthesis | Ollama (Llama3) | 5 | 5 | 4 | 4 | N/A |  | Y
+Role |  Photosynthesis | Ollama (mistral) | 5 | 4 | 3 | 3 | N/A |  | N
+Chain-of-Thought | Photosynthesis| Ollama (Llama3)| 5 | 5 | 4 | 4 | N/A | | Y
+Chain-of-Thought | Photosynthesis| Ollama (mistral)| 5 | 5 | 4 | 4 | N/A |  | Y
+Simple | Photosynthesis | gemini-2.5-flash | 5 | 5 | 5 | 5 | N/A | | Y
+Role | Photosynthesis | gemini-2.5-flash | 5 | 5 | 5 | 5 | N/A | | Y
+Chain-of-Thought | Photosynthesis| gemini-2.5-flash | 5 | 5 | 5 | 5 | N/A |  | Y
 
 ## Model Summary (After Initial Pass)
 | Capability | Best Model(s) | Evidence Snippet | Notes |
 |------------|---------------|------------------|-------|
-| Explanatory Clarity | | | |
-| Chain-of-Thought | | | |
+| Explanatory Clarity |gemini-2.5-flash |1.  **Sunlight (Light Energy):** Provides the energy to power the reactions. 2.  **Carbon Dioxide ($CO_2$):** Absorbed from the atmosphere through tiny pores on leaves called **stomata**. This provides the carbon atoms for building sugars. 3.  **Water ($H_2O$):** Absorbed from the soil through the plant's roots. This provides hydrogen atoms and electrons, and is split to release oxygen. |easy to understand|
+| Chain-of-Thought | gemini-2.5-flash|Photosynthesis is the remarkable process by which plants, algae, and some bacteria convert light energy into chemical energy, in the form of glucose (sugar). It's essentially how plants "eat" and, in doing so, produce the oxygen we breathe. | detailed |
 | JSON Adherence | | | |
-| Persona Control | | | |
+| Persona Control |(gemini-2.5-flash | Alright class, settle in! Grab your notebooks – or just lean forward and listen, because today, we're diving into one of the most fundamental, most incredible processes on Earth: **Photosynthesis**.| |
 | Instruction Strictness | | | |
 
 ## Insight Log
@@ -81,3 +90,46 @@ Answer briefly:
     *   Break down complex tasks into smaller, more manageable prompts.
 
 ---
+# Week 2 Lab: Building a Mini RAG FAQ Agent
+
+## Original rag_lab.py script.
+
+## Baseline 
+
+--- Querying for: 'How can I return a product?' ---
+Retrieved context: You can return any item within 30 days of purchase for a full refund.
+You can reach our customer support team via email at support@example.com or by calling our toll-free number.
+Answer: According to our return policy, you can return any item within 30 days of purchase for a full refund. To initiate the return process, simply reach out to our customer support team via email at support@example.com or by calling our toll-free number. We'll guide you through the rest of the process and ensure that your return is processed smoothly.
+
+--- Querying for: 'What's the process for tracking my package?' ---
+Retrieved context: Once your order has shipped, you will receive an email with a tracking number.
+You can reach our customer support team via email at support@example.com or by calling our toll-free number.
+Answer: Based on the provided context, here's a clear and concise answer:
+
+"Once your order has shipped, you will receive an email with a tracking number. You can use this tracking number to track the status of your package. No further action is required from your end."
+
+(Note: I didn't mention reaching out to customer support because that's not necessary for tracking your package. The context suggests that the tracking information will be provided via email.)
+
+--- Querying for: 'Do you ship to Canada?' ---
+Retrieved context: Yes, we ship to most countries worldwide. Shipping costs may vary.
+Yes, we offer gift wrapping for an additional fee. You can select this option at checkout.
+Answer: According to our shipping policy, yes, we do ship to Canada!
+
+--- Querying for: 'What are the support hours?' ---
+Retrieved context: Our customer support is available Monday to Friday, from 9 AM to 5 PM EST.
+We accept all major credit cards, PayPal, and Apple Pay.
+Answer: According to our available information, our customer support hours are Monday to Friday, from 9 AM to 5 PM EST.
+
+--- Querying for: 'Can I pay with Bitcoin?' ---
+Retrieved context: We accept all major credit cards, PayPal, and Apple Pay.
+Yes, we ship to most countries worldwide. Shipping costs may vary.
+Answer: Based on the provided context, it does not explicitly mention Bitcoin as an accepted payment method. The list of accepted payment methods includes all major credit cards, PayPal, and Apple Pay. Therefore, I must answer:
+
+"No, we do not accept Bitcoin as a payment method."
+
+##  python rag_labv2.py --k 3
+| Query | Mode (raw/RAG) | k | Retrieved IDs | Strengths | Weaknesses | Failure Modes | Notes |
+|-------|----------------|---|---------------|-----------|------------|---------------|-------|
+|'How can I return a product?| RAG |3 | FAQ1,FAQ4, FAQ10 | accurate | n/a | n/a | clear answer |
+|What's the process for tracking my package?| RAG | 3 | faq2,faq4, faq9| clear information about the steps | n/a |n/a| |
+|Do you ship to Canada? | 

@@ -1,3 +1,4 @@
+import argparse
 import requests
 import json
 import chromadb
@@ -10,6 +11,7 @@ OLLAMA_CONFIG = {
 }
 CHROMA_DB_PATH = "./chroma_db"
 COLLECTION_NAME = "faq_collection"
+DEFAULT_TOP_K = 2
 
 # --- 2. Knowledge Base ---
 # In a real-world scenario, this would come from a file, database, or API.
@@ -64,7 +66,18 @@ def index_knowledge_base():
             )
     print("Indexing complete.")
 
-def query_rag_agent(user_query):
+def parse_args():
+    """
+    Parse CLI arguments.
+    --k <int>       : number of documents to retrieve from Chroma
+    --no-context    : if set, do not retrieve any context from Chroma
+    """
+    parser = argparse.ArgumentParser(description="FAQ RAG with Ollama + ChromaDB")
+    parser.add_argument("--k", type=int, default=DEFAULT_TOP_K, help="Top-K documents to retrieve from Chroma.")
+    parser.add_argument("--no-context", action="store_true", help="Skip retrieving context from Chroma.")
+    return parser.parse_args() 
+
+def query_rag_agent(user_query: str, k: int, no_context: bool = False):
     """
     Queries the RAG agent with a user's question.
     """
@@ -76,22 +89,45 @@ def query_rag_agent(user_query):
         return "Sorry, I couldn't process your query."
 
     # 2. Query ChromaDB for relevant context
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=2  # Retrieve the top 2 most relevant documents
-    )
+    if no_context:
+        retrieved_context = ""
+        print("--no-context active: skipping context retrieval.\n")
+    else:
+        results = collection.query(
+            query_embeddings=[query_embedding],
+            n_results=max(1,k) 
+      )
+        
+    ids = (results.get("ids") or [[]])[0]
+    docs = (results.get("documents") or [[]])[0]
     
-    retrieved_context = "\n".join(results['documents'][0]) if results['documents'] else "No relevant information found."
+     # Format each context line as: "<answer> (<faqId>)"
+    formatted_context_list = [
+        f"{doc} ({faq_id})"
+        for doc, faq_id in zip(docs, ids)
+        if doc and faq_id
+    ]
+    retrieved_context = "\n".join(formatted_context_list)
     
-    print(f"Retrieved context: {retrieved_context}")
+    if retrieved_context:
+        print(f"Retrieved context (top {k}):\n{retrieved_context}\n")
+    else:
+        print("No relevant information found.\n")
 
-    # 3. Construct the prompt for the LLM
+    #3) Build the prompt for the LLM (with or without context)
+    context_block = (
+        "No additional context was provided."
+        if not retrieved_context
+        else f"Here is some context that might be relevant:\n'{retrieved_context}'"
+    )
+
+    # 4. Construct the prompt for the LLM
     prompt = f"""
     You are a helpful FAQ assistant. A user has asked the following question:
     '{user_query}'
 
-    Here is some context that might be relevant:
-    '{retrieved_context}'
+   
+    {context_block}
 
     Based on this context, please provide a clear and concise answer. If the context is not relevant, say so.
     """
@@ -109,6 +145,11 @@ def query_rag_agent(user_query):
 
 # --- 5. Main Execution ---
 if __name__ == "__main__":
+    
+    args = parse_args()
+    top_k = max(1, args.k) 
+    use_no_context = args.no_context # True if --no-context was provided
+
     # Check if the collection is empty before indexing
     if collection.count() == 0:
         index_knowledge_base()
@@ -125,5 +166,5 @@ if __name__ == "__main__":
     ]
 
     for query in test_queries:
-        answer = query_rag_agent(query)
+        answer = query_rag_agent(query, top_k, no_context=use_no_context)
         print(f"Answer: {answer}")

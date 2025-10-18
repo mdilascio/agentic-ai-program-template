@@ -168,3 +168,4 @@ node_modules/
 *.rej
 *.tmp
 *.temp
+/.vs

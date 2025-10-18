@@ -45,7 +45,7 @@ def query_ollama(prompt, model="llama3"):
     except requests.exceptions.RequestException as e:
         return f"Error: Could not connect to Ollama. Is it running? Details: {e}"
 
-def query_openai(prompt, model="gpt-3.5-turbo"):
+def query_openai(prompt, model="gpt-5-mini"):
     """Sends a prompt to the OpenAI API."""
     print(f"\n--- Querying OpenAI ({model}) ---")
     if not OPENAI_API_KEY:
@@ -74,7 +74,7 @@ def query_anthropic(prompt, model="claude-3-haiku-20240307"):
     except Exception as e:
         return f"Error querying Anthropic: {e}"
 
-def query_gemini(prompt, model="gemini-pro"):
+def query_gemini(prompt, model="gemini-2.5-flash"):
     """Sends a prompt to the Google Gemini API."""
     print(f"\n--- Querying Gemini ({model}) ---")
     if not GEMINI_API_KEY:
