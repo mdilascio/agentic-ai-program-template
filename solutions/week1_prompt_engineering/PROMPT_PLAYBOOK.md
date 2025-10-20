@@ -132,4 +132,125 @@ Answer: Based on the provided context, it does not explicitly mention Bitcoin as
 |-------|----------------|---|---------------|-----------|------------|---------------|-------|
 |'How can I return a product?| RAG |3 | FAQ1,FAQ4, FAQ10 | accurate | n/a | n/a | clear answer |
 |What's the process for tracking my package?| RAG | 3 | faq2,faq4, faq9| clear information about the steps | n/a |n/a| |
-|Do you ship to Canada? | 
+|Do you ship to Canada? | RAG | 3 |faq3,faq8, faq6 | clear indications | n/a|n/a|
+|'What are the support hours | RAG | 3 | faq7, faq5, faq4 | Gives a concrete window and time zone, reducing temporal ambiguity.|n/a| n/a|
+| Can I pay with Bitcoin? |RAG |3|faq5, faq3, faq6| direct answer| n/a|n/a||
+
+##  python rag_labv2.py --k 3 --No-Context
+| Query | Mode (raw/RAG) | k | Retrieved IDs | Strengths | Weaknesses | Failure Modes | Notes |
+|-------|----------------|---|---------------|-----------|------------|---------------|-------|
+|'How can I return a product?| RAW | 3 |---|--- |very open information | answers with steps never indicated | |
+|What's the process for tracking my package? | RAW | 3 | ----| clear steps for tracking a package | take steps at a general level, not specific ones|---|
+|'Do you ship to Canada?' | RAW| 3| ---| clear indication | speculation of different tariffs within Canada | ---|---|
+|What are the support hours? | RAW| 3| --|  direct answer | speculation about schedule changes on holidays, for example | -- | --|
+|Can I pay with Bitcoin? |RAw |3| ----| --- | wrong information |information that is not real |--|
+
+ python rag_labv2.py --k 3 --query
+| Query | Mode (raw/RAG) | k | Retrieved IDs | Strengths | Weaknesses | Failure Modes | Notes |
+|-------|----------------|---|---------------|-----------|------------|---------------|-------|
+|'How do I track my order?| RAG| 3| faq2, faq4,faq6| Concise  | --- | ----| ---|
+|'How do I track my order?| RAW| 3| ---- | step by step how track a package  | no the real steps for this exercise| ----| ---|
+
+
+#  python rag_labv2.py Use and example
+```
+python rag_lab.py --k 3 
+```
+
+```
+Knowledge base is already indexed.
+
+--- Querying for: 'How can I return a product?' ---
+Retrieved context (top 3):
+----- [faq1]
+You can return any item within 30 days of purchase for a full refund.
+-----
+----- [faq4]
+You can reach our customer support team via email at support@example.com or by calling our toll-free number.
+-----
+----- [faq10]
+If your item arrives damaged, please contact customer support immediately for a replacement or refund.
+-----
+
+Sources: ['faq1', 'faq4', 'faq10']
+
+Latency | retrieve=0.015s | generate=2.625s | total=3.754s
+Answer: To return a product, you can follow these steps:
+
+* Contact our customer support team via email at support@example.com or by calling our toll-free number.
+* Let us know that you would like to initiate a return and provide your order details.
+* Returns are accepted within 30 days of purchase for a full refund.
+
+Note: If the item arrives damaged, please contact us immediately so we can assist with a replacement or refund.
+
+--- Querying for: 'What's the process for tracking my package?' ---
+Retrieved context (top 3):
+----- [faq2]
+Once your order has shipped, you will receive an email with a tracking number.
+-----
+----- [faq4]
+You can reach our customer support team via email at support@example.com or by calling our toll-free number.
+-----
+----- [faq9]
+You can apply your discount code in the 'Promo Code' box at checkout.
+-----
+
+Sources: ['faq2', 'faq4', 'faq9']
+
+Latency | retrieve=0.001s | generate=2.403s | total=3.528s
+Answer: To track your package, you will receive an email with a tracking number once your order has shipped. This email notification will keep you updated on the status of your delivery. If you need further assistance or have questions about your shipment, you can reach our customer support team via email at support@example.com or by calling our toll-free number.
+
+Sources: ['faq2']
+
+--- Querying for: 'Do you ship to Canada?' ---
+Retrieved context (top 3):
+----- [faq3]
+Yes, we ship to most countries worldwide. Shipping costs may vary.
+-----
+----- [faq8]
+Yes, we offer gift wrapping for an additional fee. You can select this option at checkout.
+-----
+----- [faq6]
+If your order has not yet shipped, you can contact customer support to update your shipping address.
+-----
+
+Sources: ['faq3', 'faq8', 'faq6']
+
+Latency | retrieve=0.001s | generate=1.710s | total=2.829s
+Answer: According to our shipping policies, yes, we do ship to Canada! In fact, we ship to most countries worldwide, with varying costs for each destination.
+
+--- Querying for: 'What are the support hours?' ---
+Retrieved context (top 3):
+----- [faq7]
+Our customer support is available Monday to Friday, from 9 AM to 5 PM EST.
+-----
+----- [faq5]
+We accept all major credit cards, PayPal, and Apple Pay.
+-----
+----- [faq4]
+You can reach our customer support team via email at support@example.com or by calling our toll-free number.
+-----
+
+Sources: ['faq7', 'faq5', 'faq4']
+
+Latency | retrieve=0.001s | generate=1.981s | total=3.089s
+Answer: According to our FAQs, our customer support hours are Monday to Friday, from 9 AM to 5 PM EST. You can reach out to us via email at support@example.com or by calling our toll-free number during these hours.
+
+--- Querying for: 'Can I pay with Bitcoin?' ---
+Retrieved context (top 3):
+----- [faq5]
+We accept all major credit cards, PayPal, and Apple Pay.
+-----
+----- [faq3]
+Yes, we ship to most countries worldwide. Shipping costs may vary.
+-----
+----- [faq6]
+If your order has not yet shipped, you can contact customer support to update your shipping address.
+-----
+
+Sources: ['faq5', 'faq3', 'faq6']
+
+Latency | retrieve=0.001s | generate=2.160s | total=3.281s
+Answer: According to our payment options listed in [faq5], we currently do not accept Bitcoin as a form of payment. We only accept major credit cards, PayPal, and Apple Pay. If you're looking for alternative cryptocurrency payment methods, you may want to consider other retailers that support Bitcoin payments.
+```
+
